@@ -1,22 +1,14 @@
 from abc import ABC, abstractmethod, abstractproperty
 from ExceptionsDefs import *
 
-
-
-
 class SigType(ABC):
   def __init__(self):
-    self.__sig_type = None
-
-  @abstractproperty
-  def sig_type(self):
-    return self.__sig_type
+    pass
 
 class Enum(SigType):
 
-  @classmethod
-  def __checkValidInit(enum_vals):
-    if len(enum_vals) > 1:
+  def __checkValidInit(self, enum_vals):
+    if len(enum_vals) <= 1:
          raise TooFewValuesEnum("Provide More values")
     val_t = type(enum_vals[0])
     if not all(type(item)==val_t for item in enum_vals):
@@ -24,7 +16,7 @@ class Enum(SigType):
     return True
 
   def __init__(self, enum_vals):
-    self.super().__init__()
+    super().__init__()
     self.__checkValidInit(enum_vals)
     self.__vals = enum_vals
  
