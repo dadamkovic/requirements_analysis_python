@@ -5,7 +5,7 @@ class SigType(ABC):
   def __init__(self):
     pass
 
-class Enum(SigType):
+class EnumSig(SigType):
 
   def __checkValidInit(self, enum_vals):
     if len(enum_vals) <= 1:
