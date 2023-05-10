@@ -17,6 +17,12 @@ class WrongConditionError(Exception):
 class WrongAction(Exception):
   pass
 
+class InitRepeatingValuesEnum(Exception):
+  pass
+
+class ImpossibleValue(Exception):
+  pass
+
 class WrongClassSignal(Exception):
   def __init(self):
     super.__init__()

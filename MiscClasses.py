@@ -1,81 +1,47 @@
-from ExceptionsDefs import *
+from ExceptionsDefs import ImpossibleValue
+import numbers
 
-
-class Condition:
-    pass
-
-
-class Comparison(Condition):
-    def __init__(self, ls, rs, cond):
-        self.ls = ls
-        self.rs = rs
-        self.cond = cond
-        self.value = "{} {} {}".format(ls.name, cond, rs.name)
-
-
-class ConditionGroup(Condition):
-    def __init__(self):
-        super().__init__()
-        self._cond = None
-
-    @property
-    def cond(self):
-        return self._cond
-
-    @cond.setter
-    def cond(self, lst):
-        for idx in range(1, len(lst), 2):
-            if lst[idx] not in ["AND", "OR"]:
-                raise WrongConditionError("Conditions not in correct form!")
-        for idx in range(0, len(lst), 2):
-            if not issubclass(type(lst[idx]), Condition):
-                raise WrongConditionError("Conditions not in correct form!")
-
-        if lst[-1] in ["AND", "OR"]:
-            raise WrongConditionError("Conditions not in correct form!")
-
-        self._cond = lst
-
-    @property
-    def value(self):
-        text = "(\n"
-        for idx in range(len(self._cond)):
-            if idx % 2 == 0:
-                text += self._cond[idx].value + '\n'
-            else:
-                text += self._cond[idx] + '\n'
-        return text + ')'
-
-
-class ActionType:
-    pass
-
-
-class Set(ActionType):
-    def __init__(self, obj, value):
-        return obj.set(value)
-
-class Inc(ActionType):
-    def __init__(self, obj, value):
-        return obj.inc(value)
-
-
-class Start(ActionType):
-    def __init__(self, obj):
-        return obj.start()
-
-class Stop(ActionType):
-    def __init__(self, obj):
-        return obj.stop()
-
-class Reset(ActionType):
-    def __init__(self, obj, value):
-        return obj.reset(value)
-
-
-class ActionGroup:
-    def __init__(self, acts):
-        for act in acts:
-            if not issubclass(type(act), ActionType):
-                raise WrongAction("Action supplied not class ActionType!")
-        self.actions = acts
+class Parameter:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+        self.type = type(value)
+    
+    def set(self, val):
+        if type(val) == self.type:
+            return True
+        raise ImpossibleValue("Expected {} ; Recieved {}".format(self.type, type(val)))
+    
+class Timer:
+    def __init__(self, name, maximum, resolution):
+        if not isinstance(maximum, numbers.Real) or \
+        not isinstance(resolution, numbers.Real) or \
+        maximum < resolution:
+            raise ImpossibleValue("Values were max: {}; res: {}".format(maximum, resolution))
+        
+        self.name = name
+        self.maximum = maximum
+        self.resolution = resolution
+        self.__has_starter = False
+        self.__has_stopper = False
+        self.__has_reseter = False
+    
+    def start(self):
+        self.__has_starter = True
+        return True
+    
+    def stop(self):
+        self.__has_stopper = True
+        return True
+    
+    def reset(self):
+        self.__has_reseter = True
+        return True
+    
+    def checkIntegrity(self):
+        if not self.__has_starter:
+            print("Warning: Timer '{}' is never started!".format(self.name))
+        if not self.__has_stopper:
+            print("Warning: Timer '{}' is never stopped!".format(self.name))
+        if not self.__has_reseter:
+            print("Warning: Timer '{}' is never reseted!".format(self.name))
